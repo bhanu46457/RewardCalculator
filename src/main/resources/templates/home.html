@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<script>
+
+
+function showOrHide(div1, div2){
+	$("#"+div1).hide("slow");
+	$("#"+div2).show("slow");
+}
+
+
+
+$(document).ready(function(){
+	$("#showForm").click(function(){
+		
+		$("#dataTable tbody").find("tr").remove();
+		showOrHide("result-div", "form-div");
+	});
+	
+  $("#ajaxCall").click(function(){
+    var input = $("#textarea").val();
+	  $.ajax({ 
+          url: "/calculateRewards", 
+          method: 'POST', 
+          dataType: 'json', 
+          data: input,
+          contentType: 'application/json',
+          mimeType: 'application/json',
+          success: function(data) {
+        	  $.each(data, function(key, value){
+        		  if(key != 'TotalRewards'){
+        		  	console.log(key, value);
+        		  	$("#dataTable tbody").append('<tr><td>'+key+'</td><td>'+value+'</td></tr>');
+        		  }
+        		});
+        	  $('#dataTable tbody').append('<tr><td>Total Rewards</td><td>'+data.TotalRewards+'</td></tr>');
+        	  /* alert(data.TotalRewards); */
+        	  showOrHide("form-div", "result-div");
+        	  
+          },
+          error:function(data,status,er) { 
+              alert("error: "+data+" status: "+status+" er:"+er);
+          }
+      });
+	  
+	  
+	  
+  });
+});
+</script>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"> 
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
+<meta name="HandheldFriendly" content="true">
+</head>
+<body>
+<div class="container-fluid">
+	<span>&nbsp;</span>
+	<div class="container" style="width: 60%;height: 50%;background-color: #00629B;" id="form-div">
+	<h2 style="color:#fff">Rewards Calculator</h2>
+	  <p style="color:white;">Please enter JSON request here:</p>
+	  <div id="form">
+	    <div class="form-group">
+	      <textarea id="textarea" name="w3review" rows="5" cols="75" wrap="hard" style="width: 100%;">[{"amount":20,"description":null,"date":"20-Jan-2020"},
+{"amount":120,"description":null,"date":"20-Sep-2020"},
+{"amount":200,"description":null,"date":"20-Aug-2020"},
+{"amount":250,"description":null,"date":"20-Sep-2020"},
+{"amount":320,"description":null,"date":"20-Aug-2020"},
+{"amount":10,"description":null,"date":"20-Sep-2020"}]
+	      </textarea>
+	    </div>
+	    <div class="form-group">
+	      <div class="text-center">
+	      	<button id="ajaxCall" type="button" class="btn btn-secondary" style= "background-color: #FAA41A; border-radius:25px; font-weight: 700; color:#fff" >CALCULATE</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+	
+	
+	<div class="container" style="width: 50%;height: 50%;background-color: #00629B;display:none; color:white" id="result-div">
+	  <h2>Rewards Summary</h2>
+	  <p>Please click on Back button to test further:</p>
+	  
+	  <table class="table" id="dataTable">
+    <thead>
+      <tr>
+        <th>Month</th>
+        <th>Rewards</th>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+	  
+	  <div class="text-center">
+	  	<button id="showForm" type="button" class="btn btn-secondary" style="background-color: #FAA41A; border-radius:25px; font-weight: 700; color:#fff">Back to test</button>
+	  </div>
+	  <span>&nbsp;</span>
+	</div>
+	
+</div>
+
+</body>
+</html>
