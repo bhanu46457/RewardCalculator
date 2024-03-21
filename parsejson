@@ -1,0 +1,51 @@
+def parse_json(json_string):
+    data = {}
+    key = ''
+    value = ''
+    is_key = True
+    skip_next = False
+    stack = [data]
+
+    for char in json_string:
+        if skip_next:
+            skip_next = False
+            continue
+
+        if char in ' \n\t\r':  # Skip whitespace
+            continue
+
+        if char == '{':
+            if is_key:
+                stack[-1][key] = {}
+                stack.append(stack[-1][key])
+                key = ''
+            else:
+                stack.append({})
+            is_key = True
+        elif char == '}':
+            if value:
+                stack[-1][key] = value
+                value = ''
+            stack.pop()
+            is_key = False
+        elif char == ':':
+            is_key = False
+        elif char == ',':
+            if value:
+                stack[-1][key] = value
+                value = ''
+            is_key = True
+        elif char == '"':
+            skip_next = True
+        else:
+            if is_key:
+                key += char
+            else:
+                value += char
+
+    return data
+
+# Example usage:
+json_string = '{"name": "John", "age": "30", "address": {"city": "New York", "zip": "10001"}}'
+parsed_data = parse_json(json_string)
+print(parsed_data)
